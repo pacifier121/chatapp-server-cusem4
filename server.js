@@ -13,12 +13,12 @@ app.use(express.json());
 app.use(userRouter);
 app.use(msgRouter);
 
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(
-    () => {
-        console.log('Connected to mongoDB database');
-    }).catch((err) => {
-    console.log('Error! :', err);
-})
+// mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(
+//     () => {
+//         console.log('Connected to mongoDB database');
+//     }).catch((err) => {
+//     console.log('Error! :', err);
+// })
 
 const server = app.listen(process.env.PORT, () => {
     console.log(`Server up on port ${process.env.PORT}`);
