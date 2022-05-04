@@ -11,6 +11,7 @@ const router = express.Router(); // Initializing router to handle user specific 
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
 router.get('/contacts/:uid', async(req, res, next) => { // For getting all the contacts present
+    console.log('Received GET request on /contacts/:uid')
     try {
         // For getting the details of the users in the contact list of a user
         const userUid = req.params.uid;
@@ -70,6 +71,7 @@ router.post('/register', async(req, res, next) => { // For registering a new use
     // await newUser.save();
     // res.send(newUser);
 
+    console.log('Received POST request on /register')
     try {
         const userData = req.body;
         userData.uid = "abcd5";
@@ -110,6 +112,7 @@ router.post('/register', async(req, res, next) => { // For registering a new use
 })
 
 router.post('/login', async(req, res, next) => { // To login a user 
+    console.log('Received POST request on /login');
     try {
         const userCredentials = req.body;
         const user = await User.findOne({ username: userCredentials.username });
@@ -135,6 +138,7 @@ router.post('/login', async(req, res, next) => { // To login a user
 })
 
 router.post('/addcontact', async(req, res, next) => { // Add a new contact to the contact list
+    console.log('Received POST request on /addcontact');
     try {
         const userUid = req.body.uid;
         const newContactUid = req.body.contact_uid;
@@ -165,6 +169,7 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
 })
 
 router.get('/profile/:uid', async(req, res, next) => { // Getting profile information of any user
+    console.log('Received GET request on /profile/:uid');
     try {
         const user = await User.findOne({ uid: req.params.uid })
             .select(['firstname', 'lastname', 'age', 'email', 'username', 'uid', 'isProfileImageSet', 'profileImage', 'contacts']);
@@ -187,6 +192,7 @@ router.get('/profile/:uid', async(req, res, next) => { // Getting profile inform
 })
 
 router.post('/profile', async(req, res, next) => { // Updating profile information
+    console.log('Received POST request on /profile');
     try {
         const user = await User.findOneAndUpdate({ uid: req.body.uid }, req.body);
 
