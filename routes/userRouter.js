@@ -16,7 +16,7 @@ router.get('/contacts/:uid', async(req, res, next) => { // For getting all the c
         const userUid = req.params.uid;
         let user = await User.findOne({ uid: userUid });
         let contactDetails = await User.find({ uid: user.contacts })
-            .select(['firstname', 'lastname', 'uid', 'isProfileImageSet', 'profileImage']);
+            .select(['name', 'uid', 'isProfileImageSet', 'profileImage']);
 
         contactDetails = contactDetails.map(c => {
             let temp = {...c }._doc;
@@ -59,48 +59,48 @@ router.get('/contacts/:uid', async(req, res, next) => { // For getting all the c
 
 router.post('/register', async(req, res, next) => { // For registering a new user to database
     // const newUser = new User({
-    //     firstname: 'Aniket',
-    //     lastname: 'Kumar',
+    //     name: 'Arun Rawat',
     //     age: 20,
-    //     email: 'aniket121@gmail.com',
-    //     username: 'aniket121',
+    //     email: 'arun121@gmail.com',
+    //     username: 'arun121',
     //     password: 'qwerty',
-    //     uid: 'abcd',
-    //     contacts: ['abcd1', 'abcd3']
+    //     uid: 'abcd2',
+    //     contacts: ['abcd']
     // })
     // await newUser.save();
     // res.send(newUser);
+
     try {
         const userData = req.body;
-        userData.uid = "abcd4";
+        userData.uid = "abcd2";
         userData.contacts = [];
 
-        console.log(userData);
+        // console.log(userData);
 
 
-        // // Running some validations
-        // if (!validator.isEmail(userData.email)) {
-        //     return res.status(400).send({ error: "Invalid email!" });
-        // } else if (userData.password.length <= 5) {
-        //     return res.status(400).send({ error: "Password should be greater than 5 characters" });
-        // } else if (userData.age && (userData.age <= 0 || userData.age > 200)) {
-        //     return res.status(400).send({ error: "Invalid age!" })
-        // }
+        // Running some validations
+        if (!validator.isEmail(userData.email)) {
+            return res.status(400).send({ error: "Invalid email!" });
+        } else if (userData.password.length <= 5) {
+            return res.status(400).send({ error: "Password should be greater than 5 characters" });
+        } else if (userData.age && (userData.age <= 0 || userData.age > 200)) {
+            return res.status(400).send({ error: "Invalid age!" })
+        }
 
-        // const existingUser = await User.findOne({ email: userData.email });
-        // if (existingUser) {
-        //     return res.status(400).send({ error: "User with this email already exists!" });
-        // }
+        const existingUser = await User.findOne({ email: userData.email });
+        if (existingUser) {
+            return res.status(400).send({ error: "User with this email already exists!" });
+        }
 
-        // // Hashing the password before storing into DB
-        // userData.password = await bcrypt.hash(userData.password, 8);
+        // Hashing the password before storing into DB
+        userData.password = await bcrypt.hash(userData.password, 8);
 
-        // const newUser = new User(userData);
-        // await newUser.save();
+        const newUser = new User(userData);
+        await newUser.save();
 
-        // // Cleaning up unncessary data
-        // userData.username = undefined;
-        // userData.password = undefined;
+        // Cleaning up unncessary data
+        userData.username = undefined;
+        userData.password = undefined;
 
         // Sending filtered data back to client side
         res.send(userData);
