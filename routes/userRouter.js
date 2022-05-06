@@ -74,38 +74,39 @@ router.post('/register', async(req, res, next) => { // For registering a new use
     console.log('Received POST request on /register')
     try {
         const userData = req.body;
-        userData.uid = "abcd5";
-        userData.contacts = [];
+        // userData.uid = "abcd5";
+        // userData.contacts = [];
 
-        // console.log(userData);
-
-
-        // Running some validations
-        if (!validator.isEmail(userData.email)) {
-            return res.status(400).send({ error: "Invalid email!" });
-        } else if (userData.password.length <= 5) {
-            return res.status(400).send({ error: "Password should be greater than 5 characters" });
-        } else if (userData.age && (userData.age <= 0 || userData.age > 200)) {
-            return res.status(400).send({ error: "Invalid age!" })
-        }
-
-        const existingUser = await User.findOne({ email: userData.email });
-        if (existingUser) {
-            return res.status(400).send({ error: "User with this email already exists!" });
-        }
-
-        // Hashing the password before storing into DB
-        userData.password = await bcrypt.hash(userData.password, 8);
-
-        const newUser = new User(userData);
-        await newUser.save();
-
-        // Cleaning up unncessary data
-        userData.username = undefined;
-        userData.password = undefined;
-
-        // Sending filtered data back to client side
+        console.log(userData);
         res.send(userData);
+
+
+        // // Running some validations
+        // if (!validator.isEmail(userData.email)) {
+        //     return res.status(400).send({ error: "Invalid email!" });
+        // } else if (userData.password.length <= 5) {
+        //     return res.status(400).send({ error: "Password should be greater than 5 characters" });
+        // } else if (userData.age && (userData.age <= 0 || userData.age > 200)) {
+        //     return res.status(400).send({ error: "Invalid age!" })
+        // }
+
+        // const existingUser = await User.findOne({ email: userData.email });
+        // if (existingUser) {
+        //     return res.status(400).send({ error: "User with this email already exists!" });
+        // }
+
+        // // Hashing the password before storing into DB
+        // userData.password = await bcrypt.hash(userData.password, 8);
+
+        // const newUser = new User(userData);
+        // await newUser.save();
+
+        // // Cleaning up unncessary data
+        // userData.username = undefined;
+        // userData.password = undefined;
+
+        // // Sending filtered data back to client side
+        // res.send(userData);
     } catch (err) {
         next(err);
     }
