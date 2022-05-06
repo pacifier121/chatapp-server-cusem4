@@ -134,7 +134,8 @@ router.post('/login', async(req, res, next) => { // To login a user
         // const temp = ['__v', 'username', 'email', 'password', 'age'];
         // temp.forEach(item => user[item] = undefined);
 
-        res.send(user);
+        // res.send(user);
+        res.send(userCredentials);
     } catch (err) {
         next(err);
     }
