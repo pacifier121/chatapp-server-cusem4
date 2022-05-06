@@ -80,31 +80,31 @@ router.post('/register', async(req, res, next) => { // For registering a new use
         // console.log(userData);
 
 
-        // // Running some validations
-        // if (!validator.isEmail(userData.email)) {
-        //     return res.status(400).send({ error: "Invalid email!" });
-        // } else if (userData.password.length <= 5) {
-        //     return res.status(400).send({ error: "Password should be greater than 5 characters" });
-        // } else if (userData.age && (userData.age <= 0 || userData.age > 200)) {
-        //     return res.status(400).send({ error: "Invalid age!" })
-        // }
+        // Running some validations
+        if (!validator.isEmail(userData.email)) {
+            return res.status(400).send({ error: "Invalid email!" });
+        } else if (userData.password.length <= 5) {
+            return res.status(400).send({ error: "Password should be greater than 5 characters" });
+        } else if (userData.age && (userData.age <= 0 || userData.age > 200)) {
+            return res.status(400).send({ error: "Invalid age!" })
+        }
 
-        // const existingUser = await User.findOne({ email: userData.email });
-        // if (existingUser) {
-        //     return res.status(400).send({ error: "User with this email already exists!" });
-        // }
+        const existingUser = await User.findOne({ email: userData.email });
+        if (existingUser) {
+            return res.status(400).send({ error: "User with this email already exists!" });
+        }
 
-        // // Hashing the password before storing into DB
-        // userData.password = await bcrypt.hash(userData.password, 8);
+        // Hashing the password before storing into DB
+        userData.password = await bcrypt.hash(userData.password, 8);
 
-        // const newUser = new User(userData);
-        // await newUser.save();
+        const newUser = new User(userData);
+        await newUser.save();
 
-        // // Cleaning up unncessary data
-        // userData.username = undefined;
-        // userData.password = undefined;
+        // Cleaning up unncessary data
+        userData.username = undefined;
+        userData.password = undefined;
 
-        // // Sending filtered data back to client side
+        // Sending filtered data back to client side
         res.send(userData);
     } catch (err) {
         next(err);
@@ -115,21 +115,23 @@ router.post('/login', async(req, res, next) => { // To login a user
     console.log('Received POST request on /login');
     try {
         const userCredentials = req.body;
-        const user = await User.findOne({ username: userCredentials.username });
+        console.log(userCredentials);
 
-        if (!user) {
-            return res.status(404).send({ error: "No user found with these credentials!" });
-        }
+        // const user = await User.findOne({ username: userCredentials.username });
 
-        // Checking if the password is correct or not
-        const isMatch = await bcrypt.compare(userCredentials.password, user.password);
-        if (!(isMatch)) {
-            return res.status(404).send({ error: "No user found with these credentials!" });
-        }
+        // if (!user) {
+        //     return res.status(404).send({ error: "No user found with these credentials!" });
+        // }
 
-        // Removing unnecessary information
-        const temp = ['__v', 'username', 'email', 'password', 'age'];
-        temp.forEach(item => user[item] = undefined);
+        // // Checking if the password is correct or not
+        // const isMatch = await bcrypt.compare(userCredentials.password, user.password);
+        // if (!(isMatch)) {
+        //     return res.status(404).send({ error: "No user found with these credentials!" });
+        // }
+
+        // // Removing unnecessary information
+        // const temp = ['__v', 'username', 'email', 'password', 'age'];
+        // temp.forEach(item => user[item] = undefined);
 
         res.send(user);
     } catch (err) {
