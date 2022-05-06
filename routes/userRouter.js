@@ -116,26 +116,26 @@ router.post('/login', async(req, res, next) => { // To login a user
     console.log('Received POST request on /login');
     try {
         const userCredentials = req.body;
-        console.log(userCredentials);
+        // console.log(userCredentials);
 
-        // const user = await User.findOne({ username: userCredentials.username });
+        const user = await User.findOne({ username: userCredentials.username });
 
-        // if (!user) {
-        //     return res.status(404).send({ error: "No user found with these credentials!" });
-        // }
+        if (!user) {
+            return res.status(404).send({ error: "No user found with these credentials!" });
+        }
 
-        // // Checking if the password is correct or not
-        // const isMatch = await bcrypt.compare(userCredentials.password, user.password);
-        // if (!(isMatch)) {
-        //     return res.status(404).send({ error: "No user found with these credentials!" });
-        // }
+        // Checking if the password is correct or not
+        const isMatch = await bcrypt.compare(userCredentials.password, user.password);
+        if (!(isMatch)) {
+            return res.status(404).send({ error: "No user found with these credentials!" });
+        }
 
-        // // Removing unnecessary information
-        // const temp = ['__v', 'username', 'email', 'password', 'age'];
-        // temp.forEach(item => user[item] = undefined);
+        // Removing unnecessary information
+        const temp = ['__v', 'username', 'email', 'password', 'age'];
+        temp.forEach(item => user[item] = undefined);
 
-        // res.send(user);
-        res.send(userCredentials);
+        res.send(user);
+        // res.send(userCredentials);
     } catch (err) {
         next(err);
     }
