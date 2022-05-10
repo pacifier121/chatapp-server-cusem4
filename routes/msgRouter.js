@@ -8,6 +8,7 @@ const router = express.Router();
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
 router.post('/msg', async(req, res, next) => { // To store the message sent into database
+    console.log('Received POST request on /msg');
     try {
         const msgData = req.body;
         msgData.content = cryptr.encrypt(msgData.content);
@@ -22,6 +23,7 @@ router.post('/msg', async(req, res, next) => { // To store the message sent into
 })
 
 router.get('/chatmsgs', async(req, res, next) => { // To get all the messages between two users in the chat
+    console.log('Received GET request on /chatmsgs');
     try {
         const users = [req.body.user, req.body.other_user];
         const msgs = await Msg.find({ from: users, to: users });
@@ -39,6 +41,7 @@ router.get('/chatmsgs', async(req, res, next) => { // To get all the messages be
 })
 
 router.delete('/chatmsg/:id', async(req, res, next) => { // To delete a message by it's _id
+    console.log('Received DELETE request on /chatmsg/:id');
     try {
         const msg = await Msg.findById(req.params.id);
 

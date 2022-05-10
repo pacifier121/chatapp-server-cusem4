@@ -11,12 +11,13 @@ const router = express.Router(); // Initializing router to handle user specific 
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
 router.get('/contacts/:uid', async(req, res, next) => { // For getting all the contacts present
+    console.log('Received GET request on /contacts/:uid')
     try {
         // For getting the details of the users in the contact list of a user
         const userUid = req.params.uid;
         let user = await User.findOne({ uid: userUid });
         let contactDetails = await User.find({ uid: user.contacts })
-            .select(['firstname', 'lastname', 'uid', 'isProfileImageSet', 'profileImage']);
+            .select(['name', 'uid', 'isProfileImageSet', 'profileImage']);
 
         contactDetails = contactDetails.map(c => {
             let temp = {...c }._doc;
@@ -59,21 +60,26 @@ router.get('/contacts/:uid', async(req, res, next) => { // For getting all the c
 
 router.post('/register', async(req, res, next) => { // For registering a new user to database
     // const newUser = new User({
-    //     firstname: 'Aniket',
-    //     lastname: 'Kumar',
+    //     name: 'Arun Rawat',
     //     age: 20,
-    //     email: 'aniket121@gmail.com',
-    //     username: 'aniket121',
+    //     email: 'arun121@gmail.com',
+    //     username: 'arun121',
     //     password: 'qwerty',
-    //     uid: 'abcd',
-    //     contacts: ['abcd1', 'abcd3']
+    //     uid: 'abcd2',
+    //     contacts: ['abcd']
     // })
     // await newUser.save();
     // res.send(newUser);
+
+    console.log('Received POST request on /register')
     try {
         const userData = req.body;
-        userData.uid = "abcd4";
+        userData.uid = "abcd5";
         userData.contacts = [];
+
+        // console.log(userData);
+        res.send(userData);
+
 
         // Running some validations
         if (!validator.isEmail(userData.email)) {
@@ -107,8 +113,11 @@ router.post('/register', async(req, res, next) => { // For registering a new use
 })
 
 router.post('/login', async(req, res, next) => { // To login a user 
+    console.log('Received POST request on /login');
     try {
         const userCredentials = req.body;
+        // console.log(userCredentials);
+
         const user = await User.findOne({ username: userCredentials.username });
 
         if (!user) {
@@ -126,12 +135,14 @@ router.post('/login', async(req, res, next) => { // To login a user
         temp.forEach(item => user[item] = undefined);
 
         res.send(user);
+        // res.send(userCredentials);
     } catch (err) {
         next(err);
     }
 })
 
 router.post('/addcontact', async(req, res, next) => { // Add a new contact to the contact list
+    console.log('Received POST request on /addcontact');
     try {
         const userUid = req.body.uid;
         const newContactUid = req.body.contact_uid;
@@ -162,6 +173,7 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
 })
 
 router.get('/profile/:uid', async(req, res, next) => { // Getting profile information of any user
+    console.log('Received GET request on /profile/:uid');
     try {
         const user = await User.findOne({ uid: req.params.uid })
             .select(['firstname', 'lastname', 'age', 'email', 'username', 'uid', 'isProfileImageSet', 'profileImage', 'contacts']);
@@ -184,6 +196,7 @@ router.get('/profile/:uid', async(req, res, next) => { // Getting profile inform
 })
 
 router.post('/profile', async(req, res, next) => { // Updating profile information
+    console.log('Received POST request on /profile');
     try {
         const user = await User.findOneAndUpdate({ uid: req.body.uid }, req.body);
 

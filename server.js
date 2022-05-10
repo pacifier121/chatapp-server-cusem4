@@ -1,5 +1,5 @@
 const express = require('express');
-// const cors = require('cors');  // For bypassing CORS policy
+const cors = require('cors'); // For bypassing CORS policy
 const mongoose = require('mongoose');
 const userRouter = require('./routes/userRouter');
 const msgRouter = require('./routes/msgRouter');
@@ -8,6 +8,9 @@ const app = express();
 require('dotenv').config({ path: './dev.env' }); // Env. var. file
 
 app.use(express.json());
+
+// Using cors middleware
+app.use(cors());
 
 // Registering routers
 app.use(userRouter);
