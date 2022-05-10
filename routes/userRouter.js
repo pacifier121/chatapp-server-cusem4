@@ -10,14 +10,14 @@ require('dotenv').config({ path: './dev.env' }); // Env. var. file
 const router = express.Router(); // Initializing router to handle user specific requests
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
-router.get('/contacts/:uid', async(req, res, next) => { // For getting all the contacts present
-    console.log('Received GET request on /contacts/:uid')
+router.get('/contacts/:username', async(req, res, next) => { // For getting all the contacts present
+    console.log('Received GET request on /contacts/:username')
     try {
         // For getting the details of the users in the contact list of a user
-        const userUid = req.params.uid;
-        let user = await User.findOne({ uid: userUid });
-        let contactDetails = await User.find({ uid: user.contacts })
-            .select(['name', 'uid', 'isProfileImageSet', 'profileImage']);
+        const username = req.params.username;
+        let user = await User.findOne({ username });
+        let contactDetails = await User.find({ username: user.contacts })
+            .select(['name', 'isProfileImageSet', 'profileImage']);
 
         contactDetails = contactDetails.map(c => {
             let temp = {...c }._doc;
@@ -30,7 +30,7 @@ router.get('/contacts/:uid', async(req, res, next) => { // For getting all the c
 
         for (let i = 0; i < contactDetails.length; i++) {
             let c = contactDetails[i];
-            const msg = await Msg.findOne({ from: user.uid, to: c.uid }, [], { sort: { 'createdAt': -1 } });
+            const msg = await Msg.findOne({ from: user.username, to: c.username }, [], { sort: { 'createdAt': -1 } });
             if (msg) {
                 const msgDetails = {...msg }._doc;
                 msgDetails.content = cryptr.decrypt(msgDetails.content);
@@ -59,40 +59,26 @@ router.get('/contacts/:uid', async(req, res, next) => { // For getting all the c
 })
 
 router.post('/register', async(req, res, next) => { // For registering a new user to database
-    // const newUser = new User({
-    //     name: 'Arun Rawat',
-    //     age: 20,
-    //     email: 'arun121@gmail.com',
-    //     username: 'arun121',
-    //     password: 'qwerty',
-    //     uid: 'abcd2',
-    //     contacts: ['abcd']
-    // })
-    // await newUser.save();
-    // res.send(newUser);
-
     console.log('Received POST request on /register')
     try {
         const userData = req.body;
-        userData.uid = "abcd5";
         userData.contacts = [];
-
-        // console.log(userData);
-        res.send(userData);
-
 
         // Running some validations
         if (!validator.isEmail(userData.email)) {
-            return res.status(400).send({ error: "Invalid email!" });
+            return res.send({ error: "Invalid email!" });
         } else if (userData.password.length <= 5) {
-            return res.status(400).send({ error: "Password should be greater than 5 characters" });
-        } else if (userData.age && (userData.age <= 0 || userData.age > 200)) {
-            return res.status(400).send({ error: "Invalid age!" })
-        }
+            return res.send({ error: "Password should be greater than 5 characters" });
+        } 
 
-        const existingUser = await User.findOne({ email: userData.email });
+        let existingUser = await User.findOne({ email: userData.email });
         if (existingUser) {
-            return res.status(400).send({ error: "User with this email already exists!" });
+            return res.send({ error: "User with this email already exists!" });
+        }
+        
+        existingUser = await User.findOne({username : userData.username});
+        if (existingUser) {
+            return res.send({ error: "User with this username already exists!" });
         }
 
         // Hashing the password before storing into DB
@@ -102,7 +88,6 @@ router.post('/register', async(req, res, next) => { // For registering a new use
         await newUser.save();
 
         // Cleaning up unncessary data
-        userData.username = undefined;
         userData.password = undefined;
 
         // Sending filtered data back to client side
@@ -121,17 +106,17 @@ router.post('/login', async(req, res, next) => { // To login a user
         const user = await User.findOne({ username: userCredentials.username });
 
         if (!user) {
-            return res.status(404).send({ error: "No user found with these credentials!" });
+            return res.send({ error: "No user found with these credentials!" });
         }
 
         // Checking if the password is correct or not
         const isMatch = await bcrypt.compare(userCredentials.password, user.password);
         if (!(isMatch)) {
-            return res.status(404).send({ error: "No user found with these credentials!" });
+            return res.send({ error: "No user found with these credentials!" });
         }
 
         // Removing unnecessary information
-        const temp = ['__v', 'username', 'email', 'password', 'age'];
+        const temp = ['__v', 'username', 'email', 'password'];
         temp.forEach(item => user[item] = undefined);
 
         res.send(user);
@@ -144,42 +129,43 @@ router.post('/login', async(req, res, next) => { // To login a user
 router.post('/addcontact', async(req, res, next) => { // Add a new contact to the contact list
     console.log('Received POST request on /addcontact');
     try {
-        const userUid = req.body.uid;
-        const newContactUid = req.body.contact_uid;
+        const username = req.body.username;
+        const newContactUsername = req.body.contact_username;
 
-        if (userUid === newContactUid) {
-            return res.status(400).send({ error: "Conatct uid same as current user's uid" });
+        if (username === newContactUsername) {
+            return res.send({ error: "Conatct username same as current user's username" });
         }
 
-        const newUser = await User.findOne({ uid: newContactUid });
+        const newUser = await User.findOne({ username : newContactUsername });
         if (!newUser) {
-            return res.status(404).send({ error: "No such user exists!" });
+            return res.send({ error: "No such user exists!" });
         }
 
-        const user = await User.findOne({ uid: userUid });
-        const alreadyPresent = user.contacts.filter(c => c === newContactUid);
+        const user = await User.findOne({ username });
+        const alreadyPresent = user.contacts.filter(c => c === newContactUsername);
 
         if (alreadyPresent && alreadyPresent.length > 0) {
             return res.send({ error: "User already present in contacts list" });
         } else {
-            user.contacts.push(newContactUid);
+            user.contacts.push(newContactUsername);
         }
         await user.save();
 
-        res.send(user);
+
+        res.send({msg : "Contact added successfully!"});
     } catch (err) {
         next(err);
     }
 })
 
-router.get('/profile/:uid', async(req, res, next) => { // Getting profile information of any user
-    console.log('Received GET request on /profile/:uid');
+router.get('/profile/:username', async(req, res, next) => { // Getting profile information of any user
+    console.log('Received GET request on /profile/:username');
     try {
         const user = await User.findOne({ uid: req.params.uid })
-            .select(['firstname', 'lastname', 'age', 'email', 'username', 'uid', 'isProfileImageSet', 'profileImage', 'contacts']);
+            .select(['name', 'email', 'username', 'isProfileImageSet', 'profileImage', 'contacts']);
 
         if (!user) {
-            res.status(404).send({ error: "No such user exists!" });
+            res.send({ error: "No such user exists!" });
         }
 
         const userDetails = {...user }._doc;
@@ -198,10 +184,10 @@ router.get('/profile/:uid', async(req, res, next) => { // Getting profile inform
 router.post('/profile', async(req, res, next) => { // Updating profile information
     console.log('Received POST request on /profile');
     try {
-        const user = await User.findOneAndUpdate({ uid: req.body.uid }, req.body);
+        const user = await User.findOneAndUpdate({ username: req.body.username }, req.body);
 
         if (!user) {
-            return res.status(404).send({ error: "No such user exists!" });
+            return res.send({ error: "No such user exists!" });
         }
 
         res.send(user);

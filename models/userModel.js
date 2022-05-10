@@ -6,12 +6,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         max: 40
     },
-    age: {
-        type: Number,
-        min: 1,
-        max: 200,
-        default: 18,
-    },
     email: {
         type: String,
         required: true,
@@ -28,11 +22,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         min: 6 // Min. 6 character long password
-    },
-    uid: {
-        type: String,
-        unique: true,
-        required: true,
     },
     isProfileImageSet: {
         type: Boolean,

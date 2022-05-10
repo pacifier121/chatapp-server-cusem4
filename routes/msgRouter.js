@@ -11,6 +11,12 @@ router.post('/msg', async(req, res, next) => { // To store the message sent into
     console.log('Received POST request on /msg');
     try {
         const msgData = req.body;
+
+        // Running some validations
+        if (msgData.from === msgData.to){
+            res.send({error : "User can't msg himself"})
+        }
+
         msgData.content = cryptr.encrypt(msgData.content);
 
         const msg = new Msg(msgData);
@@ -22,11 +28,11 @@ router.post('/msg', async(req, res, next) => { // To store the message sent into
     }
 })
 
-router.get('/chatmsgs', async(req, res, next) => { // To get all the messages between two users in the chat
-    console.log('Received GET request on /chatmsgs');
+router.post('/chatmsgs', async(req, res, next) => { // To get all the messages between two users in the chat
+    console.log('Received POST request on /chatmsgs');
     try {
-        const users = [req.body.user, req.body.other_user];
-        const msgs = await Msg.find({ from: users, to: users });
+        const users = [req.body.from, req.body.to];
+        const msgs = await Msg.find({ from: users, to: users }, [], {'createdAt': -1});
 
         // Removing unnecessary information
         msgs.forEach(m => {
