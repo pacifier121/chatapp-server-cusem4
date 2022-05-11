@@ -16,6 +16,10 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
         // For getting the details of the users in the contact list of a user
         const username = req.params.username;
         let user = await User.findOne({ username });
+        if (!user){
+            return res.send({error : "No such user exists!"})
+        }
+
         let contactDetails = await User.find({ username: user.contacts })
             .select(['name', 'isProfileImageSet', 'profileImage']);
 
