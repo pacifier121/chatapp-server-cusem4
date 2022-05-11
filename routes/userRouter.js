@@ -116,8 +116,9 @@ router.post('/login', async(req, res, next) => { // To login a user
         }
 
         // Removing unnecessary information
-        const temp = ['__v', 'username', 'email', 'password'];
+        const temp = ['__v', 'password'];
         temp.forEach(item => user[item] = undefined);
+        
 
         res.send(user);
         // res.send(userCredentials);
