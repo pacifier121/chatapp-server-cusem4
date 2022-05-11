@@ -11,7 +11,7 @@ const router = express.Router(); // Initializing router to handle user specific 
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
 router.get('/contacts/:username', async(req, res, next) => { // For getting all the contacts present
-    console.log(`Received GET request on /contacts/${username}`)
+    console.log(`Received GET request on /contacts/${req.params.username}`)
     try {
         // For getting the details of the users in the contact list of a user
         const username = req.params.username;
