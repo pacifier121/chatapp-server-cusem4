@@ -201,4 +201,59 @@ router.post('/profile', async(req, res, next) => { // Updating profile informati
     }
 })
 
+// TODO
+// TEST feature : image upload
+const multer = require('multer');
+const sharp = require('sharp');
+
+const uploadImage = multer({
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+            cb(new Error('Please upload a valid file!'))
+        }
+        cb(undefined, true);
+    }
+})
+
+router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) => {
+    console.log('Recieved POST request on /uploadimage')
+    try{
+        const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
+        // const buffer = req.file.buffer;
+        console.log(buffer);
+
+        if (!buffer){
+            return res.send({error : "Please upload a file!"})
+        }
+
+        const user = await User.findOneAndUpdate({username : req.body.username}, {isProfileImageSet: true, profileImage: buffer});
+        if (!user){
+            return res.send({error : "User not found!"})
+        }
+
+        res.send({msg : "Image saved successfully!"});
+    } catch (err){
+        next(err)
+    }
+})
+
+router.get('/profileimage/:username', async(req, res, next) => {
+    console.log(`Recieved GET request on /profileimage/${req.params.username}`);
+    try{
+        const user = await User.findOne({username: req.params.username});
+        if (!user){
+            return res.send({error : "No such user found!"})
+        }
+
+        res.set('Content-Type', 'image/png')
+        // res.send(`<img src=${"data:image/png;base64," + user.profileImage.toString('base64')} >`)
+        res.send(user.profileImage)
+    } catch (err) {
+        next(err);
+    }
+})
+
+
+// ENDS Here
+
 module.exports = router;
