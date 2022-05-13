@@ -4,6 +4,43 @@ const express = require('express');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const Cryptr = require('Cryptr');
+const dateAndTime = require('date-and-time');
+
+// To transform msg timeStamp into meaningful date and time 
+const transformDateAndTime = (timeStamp) => {
+    const now = new Date();
+    const diffDays = Math.floor(dateAndTime.subtract(now, timeStamp).toDays());
+    const diffHours = Math.floor(dateAndTime.subtract(now, timeStamp).toHours());
+    const diffMinutes = Math.floor(dateAndTime.subtract(now, timeStamp).toMinutes());
+    if (diffDays < 1){
+        // For same day messages
+        if (diffHours < 1){
+            if (diffMinutes < 1){
+                return 'Now';
+            }
+            else if (diffMinutes === 1){
+                // For same hour msgs
+                return '1 min ago';
+            } else {
+                return `${diffMinutes} mins ago`;
+            } 
+        }
+        else if (diffHours === 1){
+            // For same hour msgs
+            return '1 hour ago';
+        } else if (diffHours < 12){
+            return `${diffHours} hours ago`;
+        } 
+        return 'Today';
+    }
+    else if (diffDays === 1){
+        // For older msgs
+        return '1 day ago';
+    } else if (diffDays < 7){
+        return `${diffDays} days ago`;
+    } 
+    return '1 week ago';
+}
 
 require('dotenv').config({ path: './dev.env' }); // Env. var. file
 
@@ -21,7 +58,7 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
         }
 
         let contactDetails = await User.find({ username: user.contacts })
-            .select(['name', 'isProfileImageSet', 'profileImage']);
+            .select(['name', 'isProfileImageSet', 'profileImage', 'username']);
 
         contactDetails = contactDetails.map(c => {
             let temp = {...c }._doc;
@@ -46,7 +83,8 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
                 msgDetails.to = undefined;
 
                 const date = new Date(msgDetails.createdAt);
-                msgDetails.time = date.toLocaleString();
+                msgDetails.time = transformDateAndTime(date);
+                // msgDetails.time = date.toLocaleString();
                 msgDetails.createdAt = undefined;
 
                 c.latest_msg = {...msgDetails };
