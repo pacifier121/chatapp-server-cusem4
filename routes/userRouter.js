@@ -48,7 +48,7 @@ const router = express.Router(); // Initializing router to handle user specific 
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
 router.get('/contacts/:username', async(req, res, next) => { // For getting all the contacts present
-    console.log(`Received GET request on /contacts/${req.params.username}`)
+    console.log(`Recieved GET request on /contacts/${req.params.username}`)
     try {
         // For getting the details of the users in the contact list of a user
         const username = req.params.username;
@@ -100,7 +100,7 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
 })
 
 router.post('/register', async(req, res, next) => { // For registering a new user to database
-    console.log('Received POST request on /register')
+    console.log('Recieved POST request on /register')
     try {
         const userData = req.body;
         userData.contacts = [];
@@ -139,7 +139,7 @@ router.post('/register', async(req, res, next) => { // For registering a new use
 })
 
 router.post('/login', async(req, res, next) => { // To login a user 
-    console.log('Received POST request on /login');
+    console.log('Recieved POST request on /login');
     try {
         const userCredentials = req.body;
         // console.log(userCredentials);
@@ -169,7 +169,7 @@ router.post('/login', async(req, res, next) => { // To login a user
 })
 
 router.post('/addcontact', async(req, res, next) => { // Add a new contact to the contact list
-    console.log('Received POST request on /addcontact');
+    console.log('Recieved POST request on /addcontact');
     try {
         const username = req.body.username;
         const newContactUsername = req.body.contact_username;
@@ -201,7 +201,7 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
 })
 
 router.get('/profile/:username', async(req, res, next) => { // Getting profile information of any user
-    console.log('Received GET request on /profile/:username');
+    console.log('Recieved GET request on /profile/:username');
     try {
         const user = await User.findOne({ uid: req.params.uid })
             .select(['name', 'email', 'username', 'isProfileImageSet', 'profileImage', 'contacts']);
@@ -224,7 +224,7 @@ router.get('/profile/:username', async(req, res, next) => { // Getting profile i
 })
 
 router.post('/profile', async(req, res, next) => { // Updating profile information
-    console.log('Received POST request on /profile');
+    console.log('Recieved POST request on /profile');
     try {
         const user = await User.findOneAndUpdate({ username: req.body.username }, req.body);
 
