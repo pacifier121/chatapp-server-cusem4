@@ -93,8 +93,7 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
             details.push(c);
         };
 
-        const dataToSend = {username : username, contact_details: details};
-        res.send(dataToSend);
+        res.send(details);
     } catch (err) {
         next(err);
     }
