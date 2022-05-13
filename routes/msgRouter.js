@@ -8,7 +8,7 @@ const router = express.Router();
 const cryptr = new Cryptr(process.env.CRYPTR_SECRET);
 
 router.post('/msg', async(req, res, next) => { // To store the message sent into database
-    console.log('Received POST request on /msg');
+    console.log('Recieved POST request on /msg');
     try {
         const msgData = req.body;
 
@@ -22,17 +22,17 @@ router.post('/msg', async(req, res, next) => { // To store the message sent into
         const msg = new Msg(msgData);
         await msg.save();
 
-        res.send(msg);
+        res.send(null);
     } catch (err) {
         next(err);
     }
 })
 
 router.post('/chatmsgs', async(req, res, next) => { // To get all the messages between two users in the chat
-    console.log('Received POST request on /chatmsgs');
+    console.log('Recieved POST request on /chatmsgs');
     try {
         const users = [req.body.from, req.body.to];
-        const msgs = await Msg.find({ from: users, to: users }, [], {sort : {'createdAt': -1}});
+        const msgs = await Msg.find({ from: users, to: users }, [], {sort : {'createdAt': 1}});
 
         // Removing unnecessary information
         msgs.forEach(m => {
@@ -47,7 +47,7 @@ router.post('/chatmsgs', async(req, res, next) => { // To get all the messages b
 })
 
 router.delete('/chatmsg/:id', async(req, res, next) => { // To delete a message by it's _id
-    console.log('Received DELETE request on /chatmsg/:id');
+    console.log('Recieved DELETE request on /chatmsg/:id');
     try {
         const msg = await Msg.findById(req.params.id);
 
