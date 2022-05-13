@@ -93,7 +93,8 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
             details.push(c);
         };
 
-        res.send(details);
+        const dataToSend = {username : username, contact_details: details};
+        res.send(dataToSend);
     } catch (err) {
         next(err);
     }
@@ -257,7 +258,6 @@ router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) =
     try{
         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
         // const buffer = req.file.buffer;
-        console.log(buffer);
 
         if (!buffer){
             return res.send({error : "Please upload a file!"})
@@ -283,7 +283,6 @@ router.get('/profileimage/:username', async(req, res, next) => {
         }
 
         res.set('Content-Type', 'image/png')
-        // res.send(`<img src=${"data:image/png;base64," + user.profileImage.toString('base64')} >`)
         res.send(user.profileImage)
     } catch (err) {
         next(err);
