@@ -32,7 +32,7 @@ router.post('/chatmsgs', async(req, res, next) => { // To get all the messages b
     console.log('Received POST request on /chatmsgs');
     try {
         const users = [req.body.from, req.body.to];
-        const msgs = await Msg.find({ from: users, to: users }, [], {'createdAt': -1});
+        const msgs = await Msg.find({ from: users, to: users }, [], {sort : {'createdAt': -1}});
 
         // Removing unnecessary information
         msgs.forEach(m => {

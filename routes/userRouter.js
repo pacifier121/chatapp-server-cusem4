@@ -84,7 +84,6 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
 
                 const date = new Date(msgDetails.createdAt);
                 msgDetails.time = transformDateAndTime(date);
-                // msgDetails.time = date.toLocaleString();
                 msgDetails.createdAt = undefined;
 
                 c.latest_msg = {...msgDetails };
