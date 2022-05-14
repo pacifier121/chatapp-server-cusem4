@@ -129,10 +129,12 @@ router.post('/register', async(req, res, next) => { // For registering a new use
         await newUser.save();
 
         // Cleaning up unncessary data
-        userData.password = undefined;
+        newUser.password = undefined;
+        newUser.__v = undefined;
 
         // Sending filtered data back to client side
-        res.send(userData);
+        res.send(newUser);
+        // res.send(userData);
     } catch (err) {
         next(err);
     }
@@ -257,12 +259,13 @@ router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) =
     try{
         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
         // const buffer = req.file.buffer;
+        let imageBase64 = buffer.toString('base64');
 
         if (!buffer){
             return res.send({error : "Please upload a file!"})
         }
 
-        const user = await User.findOneAndUpdate({username : req.body.username}, {isProfileImageSet: true, profileImage: buffer});
+        const user = await User.findOneAndUpdate({username : req.body.username}, {isProfileImageSet: true, profileImage: imageBase64});
         if (!user){
             return res.send({error : "User not found!"})
         }
@@ -281,8 +284,11 @@ router.get('/profileimage/:username', async(req, res, next) => {
             return res.send({error : "No such user found!"})
         }
 
-        res.set('Content-Type', 'image/png')
-        res.send(user.profileImage)
+        // res.set('Content-Type', 'image/png')
+        
+        const imageSrc = "data:image/png;base64," + user.profileImage; // Source of image
+        const image = "<img src=\"" + imageSrc + "\" >"; // HTML Image with source
+        res.send(image)
     } catch (err) {
         next(err);
     }
