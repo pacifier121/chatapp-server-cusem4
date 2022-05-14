@@ -3,7 +3,7 @@ const Msg = require('../models/msgModel');
 const express = require('express');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
-const Cryptr = require('Cryptr');
+const Cryptr = require('cryptr');
 const dateAndTime = require('date-and-time');
 
 // To transform msg timeStamp into meaningful date and time 
