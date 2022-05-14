@@ -22,7 +22,7 @@ router.post('/msg', async(req, res, next) => { // To store the message sent into
         const msg = new Msg(msgData);
         await msg.save();
 
-        res.send(msg);
+        res.send(null);
     } catch (err) {
         next(err);
     }
