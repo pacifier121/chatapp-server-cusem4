@@ -43,7 +43,7 @@ const transformDateAndTime = (timeStamp) => {
 }
 
 // To sort the contacts according to the time of latest reply
-const sortContactsWithTime = (details) => {
+const sortContactsByTime = (details) => {
     details.forEach((c) => {
         c.creationTime = Date.parse(c.latest_msg.createdAt);
     })
@@ -110,7 +110,7 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
             details.push(c);
         };
 
-        details = sortContactsWithTime(details);
+        details = sortContactsByTime(details);
 
         res.send(details);
     } catch (err) {
