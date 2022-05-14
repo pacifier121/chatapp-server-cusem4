@@ -42,6 +42,23 @@ const transformDateAndTime = (timeStamp) => {
     return '1 week ago';
 }
 
+// To sort the contacts according to the time of latest reply
+const sortContactsWithTime = (details) => {
+    details.forEach((c) => {
+        c.creationTime = Date.parse(c.latest_msg.createdAt);
+    })
+    details.sort((first, second) => {
+        if (first.creationTime < second.creationTime) return 1;
+        else if (first.creationTime > second.creationTime) return -1;
+        return 0;
+    })
+    details.forEach((c) => {
+        c.creationTime = undefined;
+        c.latest_msg.createdAt = undefined;
+    })
+    return details;
+}
+
 require('dotenv').config({ path: './dev.env' }); // Env. var. file
 
 const router = express.Router(); // Initializing router to handle user specific requests
@@ -84,7 +101,7 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
 
                 const date = new Date(msgDetails.createdAt);
                 msgDetails.time = transformDateAndTime(date);
-                msgDetails.createdAt = undefined;
+                // msgDetails.createdAt = undefined;
 
                 c.latest_msg = {...msgDetails };
             } else {
@@ -92,6 +109,8 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
             }
             details.push(c);
         };
+
+        details = sortContactsWithTime(details);
 
         res.send(details);
     } catch (err) {
