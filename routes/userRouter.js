@@ -88,10 +88,14 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
 
         for (let i = 0; i < contactDetails.length; i++) {
             let c = contactDetails[i];
-            const msg = await Msg.findOne({ from: user.username, to: c.username }, [], { sort: { 'createdAt': -1 } });
+            const users = [user.username, c.username];
+            const msg = await Msg.findOne({ from: users, to: users }, [], { sort: { 'createdAt': -1 } });
             if (msg) {
                 const msgDetails = {...msg }._doc;
                 msgDetails.content = cryptr.decrypt(msgDetails.content);
+                if (msgDetails.content.length > 30){
+                    msgDetails.content = msgDetails.content.slice(0, 28) + '...';
+                }
 
                 msgDetails._id = undefined;
                 msgDetails.__v = undefined;

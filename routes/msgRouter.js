@@ -1,6 +1,7 @@
 const Msg = require('../models/msgModel.js');
 const express = require('express');
 const Cryptr = require('cryptr');
+const User = require('../models/userModel');
 
 require('dotenv').config({ path: './dev.env' }); // Env. var. file
 
@@ -21,6 +22,11 @@ router.post('/msg', async(req, res, next) => { // To store the message sent into
 
         const msg = new Msg(msgData);
         await msg.save();
+
+        const user = await User.findOne({username : msg.from});
+        if (!(msg.from in user.contacts)){
+            User.findOneAndUpdate({username : msg.to}, {contacts: [...contacts, msg.from]});
+        }
 
         res.send(null);
     } catch (err) {
