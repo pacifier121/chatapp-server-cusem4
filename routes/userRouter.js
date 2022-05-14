@@ -263,6 +263,27 @@ router.post('/profile', async(req, res, next) => { // Updating profile informati
     }
 })
 
+// TEST feature: username substring search
+// Status: completed
+router.get('/search/:substring', async(req, res, next) => { // Searching the usernames starting with substring
+    try{
+        const users = await User.find({username : {$regex : new RegExp(`^(${req.params.substring})`)}});
+
+        const userDetails = users.map((user) => {
+            let temp = {};
+            temp.name = user.name;
+            temp.username = user.username;
+            temp.isProfileImageSet = user.isProfileImageSet;
+            temp.profileImage = user.profileImage;
+            return temp;
+        })
+
+        res.send(userDetails);
+    } catch (err) {
+        next(err);
+    }
+})
+
 // TODO
 // TEST feature : image upload
 const multer = require('multer');
