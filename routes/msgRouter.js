@@ -25,7 +25,8 @@ router.post('/msg', async(req, res, next) => { // To store the message sent into
 
         const user = await User.findOne({username : msg.from});
         if (!(msg.from in user.contacts)){
-            User.findOneAndUpdate({username : msg.to}, {contacts: [...contacts, msg.from]});
+            const other_user = await User.findOne({username : msg.to});
+            await User.findOneAndUpdate({username : msg.to}, {contacts: [...other_user.contacts, msg.from]});
         }
 
         res.send(null);
