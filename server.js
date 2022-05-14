@@ -23,8 +23,8 @@ mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopol
     console.log('Error! :', err);
 })
 
-const server = app.listen(process.env.PORT, () => {
-    console.log(`Server up on port ${process.env.PORT}`);
+const server = app.listen(process.env.PORT || process.env.LOCALHOST_PORT, () => {
+    console.log(`Server up on port ${process.env.PORT || process.env.LOCALHOST_PORT}`);
 })
 
 // For configuration of websockets
