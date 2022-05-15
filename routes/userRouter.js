@@ -213,6 +213,7 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
             return res.send({ error: "User already present in contacts list" });
         } else {
             user.contacts.push(newContactUsername);
+            user.contacts = [...new Set(user.contacts)];
         }
 
         await user.save();
