@@ -209,15 +209,13 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
         }
 
         const user = await User.findOne({ username });
-        const alreadyPresent = user.contacts.filter(c => c === newContactUsername);
-
-        if (alreadyPresent && alreadyPresent.length > 0) {
+        if (newContactUsername in user.contacts){
             return res.send({ error: "User already present in contacts list" });
         } else {
             user.contacts.push(newContactUsername);
         }
-        await user.save();
 
+        await user.save();
 
         res.send({msg : "Contact added successfully!"});
     } catch (err) {
