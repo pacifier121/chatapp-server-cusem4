@@ -44,17 +44,17 @@ server.on('connection', (client) => {
     client.on('new-user-joined', username => {
         client.username = username;
         all_clients[username] = client;
-        console.log(username + " is online now");
+        console.log("SOCKET.IO : " + username + " is online now");
         // server.emit('user-online', client.username);
     })
     
     client.on('msg', (msg) => {
-        console.log(`${msg.from} just sent a msg to ${msg.to} : ${msg.content}`);
+        console.log("SOCKET.IO : " + `${msg.from} just sent a msg to ${msg.to} : ${msg.content}`);
         all_clients[msg.to].emit('msg-recieved', msg);
     })
 
     client.on('disconnect', () => {
-        console.log(client.username + ' went offline');
+        console.log("SOCKET.IO : " + client.username + ' went offline');
         delete all_clients[client.username];
         // server.emit('user-offline', client.username);
     })
