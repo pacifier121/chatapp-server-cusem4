@@ -300,20 +300,20 @@ const uploadImage = multer({
 router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) => {
     console.log('Recieved POST request on /uploadimage')
     try{
-        // const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
-        const buffer = req.file.buffer;
-        console.log(buffer);
+        const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
+        // const buffer = req.file.buffer;
+        // console.log(buffer);
 
-        // let imageBase64 = buffer.toString('base64');
+        let imageBase64 = buffer.toString('base64');
 
-        // if (!buffer){
-        //     return res.send({error : "Please upload a file!"})
-        // }
+        if (!buffer){
+            return res.send({error : "Please upload a file!"})
+        }
 
-        // const user = await User.findOneAndUpdate({username : req.body.username}, {isProfileImageSet: true, profileImage: imageBase64});
-        // if (!user){
-        //     return res.send({error : "User not found!"})
-        // }
+        const user = await User.findOneAndUpdate({username : req.body.username}, {isProfileImageSet: true, profileImage: imageBase64});
+        if (!user){
+            return res.send({error : "User not found!"})
+        }
 
         res.send({msg : "Image saved successfully!"});
     } catch (err){
