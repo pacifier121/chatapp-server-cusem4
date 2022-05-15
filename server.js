@@ -23,8 +23,39 @@ mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopol
     console.log('Error! :', err);
 })
 
-const server = app.listen(process.env.PORT || process.env.LOCALHOST_PORT, () => {
+const express_server = app.listen(process.env.PORT || process.env.LOCALHOST_PORT, () => {
     console.log(`Server up on port ${process.env.PORT || process.env.LOCALHOST_PORT}`);
 })
 
+// TEST feature : websockets
 // For configuration of websockets
+
+const server = require('socket.io')(express_server, {
+    cors: {
+        origin: '*',
+    }
+}); // Giving express server to socket.io
+
+// A global clients array
+let all_clients = {};
+
+server.on('connection', (client) => {
+
+    client.on('new-user-joined', username => {
+        client.username = username;
+        all_clients[username] = client;
+        console.log("SOCKET.IO : " + username + " is online now");
+        // server.emit('user-online', client.username);
+    })
+    
+    client.on('msg', (msg) => {
+        console.log("SOCKET.IO : " + `${msg.from} just sent a msg to ${msg.to} : ${msg.content}`);
+        all_clients[msg.to].emit('msg-recieved', msg);
+    })
+
+    client.on('disconnect', () => {
+        console.log("SOCKET.IO : " + client.username + ' went offline');
+        delete all_clients[client.username];
+        // server.emit('user-offline', client.username);
+    })
+})

@@ -122,6 +122,29 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
     }
 })
 
+router.get('/contactsnames/:username', async(req, res, next) => { // For getting all the contacts present
+    console.log(`Recieved GET request on /contactsnames/${req.params.username}`)
+    try {
+        // For getting the details of the users in the contact list of a user
+        const username = req.params.username;
+        let user = await User.findOne({ username });
+        if (!user){
+            return res.send({error : "No such user exists!"})
+        }
+
+        let contactDetails = await User.find({ username: user.contacts })
+            .select(['username']);
+
+        contactDetails = contactDetails.map(c => {
+            return c.username;
+        });
+
+        res.send(contactDetails);
+    } catch (err) {
+        next(err);
+    }
+})
+
 router.post('/register', async(req, res, next) => { // For registering a new user to database
     console.log('Recieved POST request on /register')
     try {
@@ -211,11 +234,12 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
         const user = await User.findOne({ username });
         if (newContactUsername in user.contacts){
             return res.send({ error: "User already present in contacts list" });
-        } else {
-            user.contacts.push(newContactUsername);
-        }
+        }   
+        await User.findOneAndUpdate({username}, {contacts : [...new Set(user.contacts), newContactUsername]})
+            // user.contacts.push(newContactUsername);
+            // user.contacts = [...new Set(user.contacts)];
 
-        await user.save();
+        // await user.save();
 
         res.send({msg : "Contact added successfully!"});
     } catch (err) {
@@ -289,9 +313,9 @@ const sharp = require('sharp');
 
 const uploadImage = multer({
     fileFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
-            cb(new Error('Please upload a valid file!'))
-        }
+        // if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+        //     cb(new Error('Please upload a valid file!'))
+        // }
         cb(undefined, true);
     }
 })
@@ -301,7 +325,10 @@ router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) =
     try{
         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
         // const buffer = req.file.buffer;
+        // console.log(buffer);
+
         let imageBase64 = buffer.toString('base64');
+        // console.log(imageBase64);
 
         if (!buffer){
             return res.send({error : "Please upload a file!"})
@@ -318,6 +345,7 @@ router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) =
     }
 })
 
+// For sending html image element with src as image data
 router.get('/profileimage/:username', async(req, res, next) => {
     console.log(`Recieved GET request on /profileimage/${req.params.username}`);
     try{
