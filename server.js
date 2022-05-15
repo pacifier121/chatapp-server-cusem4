@@ -49,10 +49,8 @@ server.on('connection', (client) => {
     })
     
     client.on('msg', (msg) => {
-        if (msg.to in Object.keys(all_clients)){
-            console.log("SOCKET.IO : " + `${msg.from} just sent a msg to ${msg.to} : ${msg.content}`);
-            all_clients[msg.to].emit('msg-recieved', msg);
-        }
+        console.log("SOCKET.IO : " + `${msg.from} just sent a msg to ${msg.to} : ${msg.content}`);
+        all_clients[msg.to].emit('msg-recieved', msg);
     })
 
     client.on('disconnect', () => {
