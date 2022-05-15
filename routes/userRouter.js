@@ -305,6 +305,7 @@ router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) =
         // console.log(buffer);
 
         let imageBase64 = buffer.toString('base64');
+        console.log(req.body.username);
         console.log(imageBase64);
 
         if (!buffer){
