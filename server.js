@@ -49,7 +49,7 @@ server.on('connection', (client) => {
     })
     
     client.on('msg', (msg) => {
-        if (msg.to in all_clients.keys()){
+        if (msg.to in Object.keys(all_clients.keys)){
             console.log("SOCKET.IO : " + `${msg.from} just sent a msg to ${msg.to} : ${msg.content}`);
             all_clients[msg.to].emit('msg-recieved', msg);
         }
