@@ -290,9 +290,9 @@ const sharp = require('sharp');
 
 const uploadImage = multer({
     fileFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
-            cb(new Error('Please upload a valid file!'))
-        }
+        // if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+        //     cb(new Error('Please upload a valid file!'))
+        // }
         cb(undefined, true);
     }
 })
