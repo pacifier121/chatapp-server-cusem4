@@ -211,12 +211,12 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
         const user = await User.findOne({ username });
         if (newContactUsername in user.contacts){
             return res.send({ error: "User already present in contacts list" });
-        } else {
-            user.contacts.push(newContactUsername);
-            user.contacts = [...new Set(user.contacts)];
-        }
+        }   
+        await user.findOneAndUpdate({username}, {contacts : [...new Set(user.contacts), newContactUsername]})
+            // user.contacts.push(newContactUsername);
+            // user.contacts = [...new Set(user.contacts)];
 
-        await user.save();
+        // await user.save();
 
         res.send({msg : "Contact added successfully!"});
     } catch (err) {
@@ -322,6 +322,7 @@ router.post('/uploadimage', uploadImage.single('mypic'), async(req, res, next) =
     }
 })
 
+// For sending html image element with src as image data
 router.get('/profileimage/:username', async(req, res, next) => {
     console.log(`Recieved GET request on /profileimage/${req.params.username}`);
     try{
