@@ -212,7 +212,7 @@ router.post('/addcontact', async(req, res, next) => { // Add a new contact to th
         if (newContactUsername in user.contacts){
             return res.send({ error: "User already present in contacts list" });
         }   
-        await user.findOneAndUpdate({username}, {contacts : [...new Set(user.contacts), newContactUsername]})
+        await User.findOneAndUpdate({username}, {contacts : [...new Set(user.contacts), newContactUsername]})
             // user.contacts.push(newContactUsername);
             // user.contacts = [...new Set(user.contacts)];
 
