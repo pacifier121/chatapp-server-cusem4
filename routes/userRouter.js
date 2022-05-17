@@ -122,6 +122,31 @@ router.get('/contacts/:username', async(req, res, next) => { // For getting all 
     }
 })
 
+router.get('/contactsnames/:username', async(req, res, next) => { // For getting all the contacts present
+    console.log(`Recieved GET request on /contactsnames/${req.params.username}`)
+    try {
+        // For getting the details of the users in the contact list of a user
+        const username = req.params.username;
+        let user = await User.findOne({ username });
+        if (!user){
+            return res.send({error : "No such user exists!"})
+        }
+
+        let contactDetails = await User.find({ username: user.contacts })
+            .select(['username']);
+
+        contactDetails = contactDetails.map(c => {
+            let temp = {...c }._doc;
+            temp._id = undefined;
+            return temp;
+        });
+
+        res.send(contactDetails);
+    } catch (err) {
+        next(err);
+    }
+})
+
 router.post('/register', async(req, res, next) => { // For registering a new user to database
     console.log('Recieved POST request on /register')
     try {
