@@ -136,9 +136,7 @@ router.get('/contactsnames/:username', async(req, res, next) => { // For getting
             .select(['username']);
 
         contactDetails = contactDetails.map(c => {
-            let temp = {...c }._doc;
-            temp._id = undefined;
-            return temp;
+            return c.username;
         });
 
         res.send(contactDetails);
