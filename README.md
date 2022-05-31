@@ -1,6 +1,11 @@
-# chatapp-backend
-Backend for chat app
-
+# Backend code repository for the Chat Application
+## Technologies used
+For frontend, Flutter has been used
+<br>
+For backend, express.js, node.js has been used for setting up the server.
+<br>Heroku platform has been used to deploy the node server
+<br>For database, MongoDB Atlas cloud database has been used.
+<br><br>
 Here are some screenshots for the app:
 Splash screen:
 <br>
