@@ -3,6 +3,7 @@ Backend for chat app
 
 Here are some screenshots for the app:
 Splash screen:
+<br>
 <img src="screenshots/splash_screen.jpg" width="200">
 
 <br>
